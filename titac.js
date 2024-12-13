@@ -10,7 +10,7 @@ window.addEventListener('load', app);
 
 let game = ['', '', '', '', '', '', '', '', '']; 
 let turn0 = 0; // Keeps track if X or O player's turn
-let winner = false;
+let winner = null;
 let clickcount = 0;
 let currentplayer = "X";
 
@@ -53,20 +53,15 @@ function addPlayers(event) {
 checkWinner();
 }
 function handleclick(cellIndex){
-    // if(game[cellIndex] !== ""){
-    //     alert('Box already filled choose another.');
-    //     return;
-    // }
-
 
 game[cellIndex]= currentplayer;
 clickcount++;
-
+checkWinner();
 // update the UI
 
 
 // check for draw
-if (clickcount === 9) {
+if (!winner && clickcount === 9) {
     alert('Game over a tie');
     resetgame();
     return;
@@ -87,18 +82,11 @@ const winPatter = [
 const resetgame = () => {
     clickcount = 0;
     turn0 = 0;
+    winner = null;
     enableBoxes();
     document.querySelector(".playerturn").innerText = `${playerX.name}, you are up!`;
     msgcontainer.classList.add("hide");  
 }
-function highlightWinner(combination) {
-  combination.forEach(index => {
-    const cell = document.getElementById(`cell-${index}`);
-    cell.classList.add('.winner-line');
-  });
-}
-
-
 
 boxes.forEach((cell) => {
     cell.addEventListener("click", () =>{
@@ -119,7 +107,6 @@ boxes.forEach((cell) => {
         checkWinner ();
         handleclick();
     });
-    
 });
 
 const disableBoxes = () => {
@@ -143,6 +130,7 @@ const showwinner = (winner) => {
     msgcontainer.classList.remove("hide");
     document.querySelector(".playerturn").innerText = "Board is Below";
     disableBoxes(); 
+    
     }
     if(winner=== "O"){
         msg.innerText = `Congratulations, Winner is ${playerO.name}!`;
@@ -164,15 +152,11 @@ const checkWinner = () => {
 
         if(pos1val != "" && pos2val != "" && pos3val != ""){
             if (pos1val === pos2val && pos2val === pos3val){
+                winner = pos1val;
                 showwinner(pos1val);
+                return;
             }
         };
-        for (let combination of winPatter) {
-    if (combination.every(index => game[index] === player)) {
-      highlightWinner(combination); // Add line to winner cells
-      return true;
-    }
-  }
  };
 };
 
